@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Administración de Categorías</h2>
+    <!-- Botón para abrir el formulario -->
+    <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#formCategoria">+ Nueva Categoría</button>
+</div>
+
+<!-- Formulario Oculto (Crear/Editar) -->
+<div class="collapse mb-4" id="formCategoria">
+    <div class="card shadow-sm border-primary">
+        <div class="card-body">
+            <h5 class="card-title">Datos de la Categoría</h5>
+            <form id="formularioCategoria" method="POST" action="{{ url_for('categorias.guardar') }}">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-9">
+                        <input type="text" name="nombre" id="inputNombreCat" class="form-control" placeholder="Nombre de la categoría" required>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-success w-100">Guardar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla de Categorías -->
+<div class="card shadow-sm">
+    <table class="table table-hover mb-0">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nombre de Categoría</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for c in categorias %}
+            <tr>
+                <td>{{ c.id }}</td>
+                <td>{{ c.nombre }}</td>
+                <td>
+                    <!-- Botón Editar que llama al script -->
+                    <button class="btn btn-sm btn-warning" onclick="editarCategoria('{{ c.id }}', '{{ c.nombre }}')">Editar</button>
+                    
+                    <a href="{{ url_for('categorias.eliminar', id=c.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro que deseas eliminar esta categoría?')">Eliminar</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3" class="text-center text-muted py-3">No hay categorías registradas.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Script para el botón Editar -->
+<script>
+    function editarCategoria(id, nombre) {
+        // Cambia la URL del formulario para que apunte a la ruta con el ID
+        document.getElementById('formularioCategoria').action = `/categorias/guardar/${id}`;
+        // Rellena el campo
+        document.getElementById('inputNombreCat').value = nombre;
+        
+        // Abre el formulario
+        var myCollapse = new bootstrap.Collapse(document.getElementById('formCategoria'), {
+            toggle: true
+        });
+    }
+</script>
+{% endblock %}

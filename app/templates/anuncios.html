@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Gestión de Anuncios</h2>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form action="{{ url_for('anuncios.crear') }}" method="POST" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" name="titulo" class="form-control" placeholder="Título del anuncio" required>
+            </div>
+            <div class="col-md-4">
+                <input type="text" name="contenido" class="form-control" placeholder="Contenido" required>
+            </div>
+            <div class="col-md-2">
+                <select name="categoria_id" class="form-select" required>
+                    <option value="">Categoría...</option>
+                    {% for c in categorias %}
+                    <option value="{{ c.id }}">{{ c.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success w-100">Publicar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    {% for a in anuncios %}
+    <div class="col-md-6 mb-3">
+        <div class="card shadow-sm h-100 border-start border-4 border-success">
+            <div class="card-body">
+                <h5 class="card-title">{{ a.titulo }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Categoría: {{ a.categoria.nombre }}</h6>
+                <p class="card-text">{{ a.contenido }}</p>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <small class="text-muted">Escrito por: {{ a.autor.username }}</small>
+                    <a href="{{ url_for('anuncios.eliminar', id=a.id) }}" class="btn btn-sm btn-outline-danger">Borrar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12"><div class="alert alert-info">No hay anuncios creados aún.</div></div>
+    {% endfor %}
+</div>
+{% endblock %}

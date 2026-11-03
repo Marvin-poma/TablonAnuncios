@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Administración de Usuarios</h2>
+    <!-- Botón para abrir el formulario de creación -->
+    <button class="btn btn-primary" data-bs-toggle="collapse" data-bs-target="#formUsuario">+ Nuevo Usuario</button>
+</div>
+
+<!-- Formulario Oculto para Crear/Editar -->
+<div class="collapse mb-4" id="formUsuario">
+    <div class="card shadow-sm border-primary">
+        <div class="card-body">
+            <h5 class="card-title">Datos del Usuario</h5>
+            <!-- Usamos una sola ruta para crear (sin ID) o editar (con ID) -->
+            <form id="formularioUsuario" method="POST" action="{{ url_for('auth.guardar_usuario') }}">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <input type="text" name="username" id="inputUsername" class="form-control" placeholder="Nombre de usuario" required>
+                    </div>
+                    <div class="col-md-5">
+                        <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Contraseña">
+                        <small class="text-muted" id="passHelp">Obligatoria al crear, opcional al editar.</small>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-success w-100">Guardar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla de Usuarios -->
+<div class="card shadow-sm">
+    <table class="table table-hover mb-0">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nombre de Usuario</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in usuarios %}
+            <tr>
+                <td>{{ u.id }}</td>
+                <td>{{ u.username }}</td>
+                <td>
+                    <!-- Botón Editar: Usa JS para rellenar el formulario -->
+                    <button class="btn btn-sm btn-warning" 
+                            onclick="editarUsuario('{{ u.id }}', '{{ u.username }}')">
+                        Editar
+                    </button>
+                    <a href="{{ url_for('auth.eliminar_usuario', id=u.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro?')">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pequeño script para que funcione el botón Editar -->
+<script>
+    function editarUsuario(id, username) {
+        // Cambia la URL del formulario para que apunte a la ruta de edición
+        document.getElementById('formularioUsuario').action = `/usuarios/guardar/${id}`;
+        // Rellena los campos
+        document.getElementById('inputUsername').value = username;
+        document.getElementById('inputPassword').value = '';
+        document.getElementById('inputPassword').required = false;
+        
+        // Abre el formulario
+        var myCollapse = new bootstrap.Collapse(document.getElementById('formUsuario'), {
+            toggle: true
+        });
+    }
+</script>
+{% endblock %}
